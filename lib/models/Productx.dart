@@ -57,6 +57,7 @@ class Product {
     };
   }
 
+
 }
 class PhotosList {
   final List<Product> photos;
@@ -66,7 +67,6 @@ class PhotosList {
   });
   factory PhotosList.fromJson(List<dynamic> parsedJson) {
 
-    // List<Product> photos = new List<Product>();
     var photos = List<Product>.empty();
     photos = parsedJson.map((e) => Product.fromJson(jsonDecode(e))).toList();
     return PhotosList(
@@ -74,6 +74,7 @@ class PhotosList {
     );
   }
 }
+
 
 
 

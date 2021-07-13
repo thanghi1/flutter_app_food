@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_food/models/Productx.dart';
 import 'package:flutter_app_food/service/Firestore_Service.dart';
@@ -14,6 +16,7 @@ class ProductProvider extends ChangeNotifier{
   int _quantity = 1;
   List<Product> _cart = [];
   List _pdQuatity = [];
+  List _pdCart =[];
   //Getters
   String get id => _id;
   String get image => _image;
@@ -28,6 +31,7 @@ class ProductProvider extends ChangeNotifier{
 
   Stream<List<Product>> get products => firestoreService.getProducts();
   List<Product> get productCart => _cart;
+  List get pdCart => _pdCart;
   List get pdQuantity => _pdQuatity;
   //Stream<List<Product>> get pdCart => .getProducts();
 
@@ -79,10 +83,50 @@ class ProductProvider extends ChangeNotifier{
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var pdCart = _prefs.getStringList("pdCartKey");
     var pdQuantity = _prefs.getStringList("pdQuantityKey");
-    var _a = PhotosList.fromJson(pdCart).photos;
-    _cart = _a;
-    _pdQuatity = pdQuantity;
+    if(pdCart== null){
+        _cart = [];
+        _pdQuatity = [];
+        notifyListeners();
+    }else {
+      var _a = PhotosList
+          .fromJson(pdCart)
+          .photos;
+      _cart = _a;
 
+      _pdQuatity = pdQuantity;
+      notifyListeners();
+    }
+  }
+  Future ClearPdCart() async{
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var pdCart = _prefs.getStringList("pdCartKey");
+    var _a = PhotosList
+        .fromJson(pdCart)
+        .photos;
+    _cart = _a;
+    _cart.clear();
+    _prefs.setStringList("pdCartKey", []);
+    _prefs.setStringList("pdQuantityKey", []);
     notifyListeners();
+  }
+  void RemoveItem(String id, int i, Product product) async{
+
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var pdCart = _prefs.getStringList("pdCartKey");
+    var pdQuantity = _prefs.getStringList("pdQuantityKey");
+    var _a = PhotosList
+        .fromJson(pdCart)
+        .photos;
+    var _b = _cart.indexWhere((element) => element.id == id);
+    print(_b);
+    //pdQuantity.removeAt(_b);
+    _cart = _a;
+    //_cart.removeWhere((element) => element.id == id);
+    String _c = jsonEncode(_cart);
+    print(_c);
+    //_prefs.setStringList("pdCartKey", pdCart);
+    //_prefs.setStringList("pdQuantityKey", pdQuantity);
+    //notifyListeners();
+    
   }
 }

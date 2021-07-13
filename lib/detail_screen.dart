@@ -127,7 +127,7 @@ class DetailProduct extends StatelessWidget {
                                     _savePdCart(product);
                                     Cart(product: product);
 
-                                    //_deletePdCart();
+                                    // _deletePdCart();
                                     // print(jsonProduct);
                                     // print(product.toMap());
                                   },
@@ -253,7 +253,7 @@ class DetailProduct extends StatelessWidget {
       pdQuantity.add(strQuantity.toString());
     }
     else{
-      print('San pham nay da co trong danh sach roi');
+      print('San pham nay da co trong danh sach roi, so luong +1');
       var IndexOfItemWhereId = pdCart.indexWhere((element) => element.contains(product.id));
       int _a, _b;
       _a = int.parse(pdQuantity[IndexOfItemWhereId]);
@@ -276,7 +276,11 @@ class DetailProduct extends StatelessWidget {
   
   Future _deletePdCart() async{
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-
+    var _a =_prefs.getStringList("pdQuantityKey");
+    var _b = _prefs.getStringList("pdCartKey");
+    print(_a);
+    print(_b);
+    
     _prefs.remove("pdCartKey");
     _prefs.remove("pdQuantityKey");
   }

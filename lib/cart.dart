@@ -9,61 +9,79 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'detail_screen.dart';
 
 class Cart extends StatelessWidget {
-
   final Product product;
 
   const Cart({Key key, this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
     final productProvider = Provider.of<ProductProvider>(context);
+    print('Product ' + '${product}');
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cart Screen'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-          iconSize: 30,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Center(
-        child: ListView.builder(
-          itemCount: productProvider.productCart.length,
-            itemBuilder: (context, index) => Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      productProvider.productCart.isNotEmpty ?
-                       ItemCart(product: productProvider.productCart[index], index: index,) : Text('Chua co san pham nao trong gio hang'),
-
-                    ],
-                  ),
-                )),
-      ),
-      floatingActionButton: FloatingActionButton(onPressed: () => print('In ra productCart ${productProvider.productCart}'),),
-    );
+    return productProvider.productCart.isEmpty
+        ? Scaffold(
+            appBar: AppBar(
+              title: Text('Cart Screen'),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                color: Colors.white,
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            body: Center(
+              child: Text('Chua co Data gio hang'),
+            ),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Cart Screen'),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                color: Colors.white,
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            body: Center(
+              child: ListView.builder(
+                  itemCount: productProvider.productCart.length,
+                  itemBuilder: (context, index) => Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ItemCart(
+                              product: productProvider.productCart[index],
+                              index: index,
+                            )
+                          ],
+                        ),
+                      )),
+            ),
+            floatingActionButton: FloatingActionButton(
+                onPressed: () =>
+                    productProvider
+                        .ClearPdCart()),
+          );
   }
-
 }
 
 class ItemCart extends StatelessWidget {
   final Product product;
   int index;
-  ItemCart({
-    Key key, this.product, this.index
-  }) : super(key: key);
+
+  ItemCart({Key key, this.product, this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
     return Container(
-      decoration:
-          BoxDecoration(border: Border.all(width: 2.0)),
+      decoration: BoxDecoration(border: Border.all(width: 2.0)),
       margin: EdgeInsets.only(top: 20),
       width: 350,
       height: 150,
@@ -78,20 +96,18 @@ class ItemCart extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Color(product.color),
                         border: Border.all(width: 1.0),
-                        borderRadius:
-                            BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16)),
                     child: FittedBox(
                       child: Image.asset(product.image),
                     ),
                   ),
-                  flex: 1,
+                  flex: 2,
                 ),
                 Expanded(
                   child: Container(
                     //color: Colors.brown,
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(product.title),
                         Text(product.color.toString()),
@@ -99,7 +115,17 @@ class ItemCart extends StatelessWidget {
                       ],
                     ),
                   ),
-                  flex: 2,
+                  flex: 3,
+                ),
+                Expanded(
+                    child: Row(
+                      children: [
+                        IconButton(icon: Icon(Icons.delete), onPressed: () {
+                          productProvider.RemoveItem(product.id, index, product);
+                        },)
+                      ],
+                    ),
+                  flex: 1,
                 )
               ],
             ),
@@ -109,8 +135,11 @@ class ItemCart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Counter(index: index,),
-               ],
+                Counter(
+                  index: index,
+                  product: product,
+                ),
+              ],
             ),
             flex: 1,
           ),
@@ -119,27 +148,69 @@ class ItemCart extends StatelessWidget {
     );
   }
 }
+
 class Counter extends StatefulWidget {
   final index;
-  const Counter({Key key, this.index}) : super(key: key);
+  final Product product;
+
+  const Counter({Key key, this.index, this.product}) : super(key: key);
+
   @override
   _CounterState createState() => _CounterState();
 }
 
 class _CounterState extends State<Counter> {
-  int count = 1;
+  String i;
+
+  CongQuanlity() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final pdQuantity = _prefs.getStringList("pdQuantityKey");
+    final pdCart = _prefs.getStringList("pdCartKey");
+    var IndexOfItemWhereId =
+        pdCart.indexWhere((element) => element.contains(widget.product.id));
+    int _a, _b;
+    _a = int.parse(pdQuantity[IndexOfItemWhereId]);
+    _b = _a + 1;
+
+    pdQuantity[IndexOfItemWhereId] = _b.toString();
+    _prefs.setStringList("pdQuantityKey", pdQuantity);
+    setState(() {
+      i = pdQuantity[IndexOfItemWhereId];
+    });
+    print(pdQuantity);
+  }
+
+  TruQuanlity() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    final pdQuantity = _prefs.getStringList("pdQuantityKey");
+    final pdCart = _prefs.getStringList("pdCartKey");
+    var IndexOfItemWhereId =
+        pdCart.indexWhere((element) => element.contains(widget.product.id));
+    int _a, _b;
+    _a = int.parse(pdQuantity[IndexOfItemWhereId]);
+    if (_a > 2) {
+      _b = _a - 1;
+    }
+
+    pdQuantity[IndexOfItemWhereId] = _b.toString();
+    _prefs.setStringList("pdQuantityKey", pdQuantity);
+    setState(() {
+      i = pdQuantity[IndexOfItemWhereId];
+    });
+    print(pdQuantity);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    getCount();
-    print(getCount());
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-
+    print('${productProvider.pdQuantity[widget.index]}' + 'So luong');
     return Row(
       children: [
         SizedBox(
@@ -147,22 +218,19 @@ class _CounterState extends State<Counter> {
           height: 32,
           child: OutlinedButton(
             onPressed: () {
-              setState(() {
-                if (count > 1) {
-                  count--;
-                }
-              });
-              getCount();
-              print(count);
+              TruQuanlity();
             },
             child: Icon(Icons.remove),
           ),
         ),
         Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
-            //một hàng đơn vị thì hiển thị 01 02 03... sử dụng .padLeft(2,"0")
+            //Định dạng số 01 02 03 ... 09 sử dụng .padLeft(2,"0")
             child: Text(
-              '${productProvider.pdQuantity[widget.index]}'.padLeft(2, "0"),
+              i != null
+                  ? '${i}'.padLeft(2, "0")
+                  : '${productProvider.pdQuantity[widget.index]}'
+                      .padLeft(2, "0"),
               style: TextStyle(fontSize: 20),
             )),
         SizedBox(
@@ -170,11 +238,7 @@ class _CounterState extends State<Counter> {
           height: 32,
           child: OutlinedButton(
             onPressed: () {
-              setState(() {
-                count++;
-              });
-              getCount();
-              print(count);
+              CongQuanlity();
             },
             child: Icon(Icons.add),
           ),
@@ -182,15 +246,18 @@ class _CounterState extends State<Counter> {
       ],
     );
   }
-  int getCount(){
-    Static.Count = count;
-    return count;
-  }
 }
 
+Future _deletePdCart() async {
+  SharedPreferences _prefs = await SharedPreferences.getInstance();
+  var _a = _prefs.getStringList("pdQuantityKey");
+  var _b = _prefs.getStringList("pdCartKey");
+  print(_a);
+  print(_b);
 
-
-
+  _prefs.remove("pdCartKey");
+  _prefs.remove("pdQuantityKey");
+}
 
 // child: Column(
 //                     mainAxisAlignment: MainAxisAlignment.start,
