@@ -30,7 +30,7 @@ class Product {
     );
   }
 
-  Map<String,dynamic> toMap(){
+  Map<String,dynamic> toJson(){
     return{
       'id' : id,
       'title': title,
@@ -67,13 +67,15 @@ class PhotosList {
   });
   factory PhotosList.fromJson(List<dynamic> parsedJson) {
 
-    var photos = List<Product>.empty();
-    photos = parsedJson.map((e) => Product.fromJson(jsonDecode(e))).toList();
+    var photosList = List<Product>.empty();
+    photosList = parsedJson.map((e) => Product.fromJson(jsonDecode(e))).toList();
     return PhotosList(
-      photos: photos,
+      photos: photosList,
     );
   }
+
 }
+
 
 
 

@@ -15,6 +15,7 @@ class ProductProvider extends ChangeNotifier{
   int _price, _size, _color;
   int _quantity = 1;
   List<Product> _cart = [];
+  List<PhotosList> _cartPhoto = [];
   List _pdQuatity = [];
   List _pdCart =[];
   //Getters
@@ -109,24 +110,25 @@ class ProductProvider extends ChangeNotifier{
     _prefs.setStringList("pdQuantityKey", []);
     notifyListeners();
   }
+
   void RemoveItem(String id, int i, Product product) async{
 
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var pdCart = _prefs.getStringList("pdCartKey");
     var pdQuantity = _prefs.getStringList("pdQuantityKey");
     var _a = PhotosList
-        .fromJson(pdCart)
-        .photos;
-    var _b = _cart.indexWhere((element) => element.id == id);
-    print(_b);
-    //pdQuantity.removeAt(_b);
+        .fromJson(pdCart).photos;
+    var _b = _a.indexWhere((element) => element.id == id);
     _cart = _a;
-    //_cart.removeWhere((element) => element.id == id);
-    String _c = jsonEncode(_cart);
-    print(_c);
-    //_prefs.setStringList("pdCartKey", pdCart);
-    //_prefs.setStringList("pdQuantityKey", pdQuantity);
-    //notifyListeners();
+    pdQuantity.removeAt(_b);
+    _cart.removeWhere((element) => element.id == id);
+    var json = _cart.map((i) => jsonEncode(i).toString()).toList();
+
+    print(json);
+
+    _prefs.setStringList("pdCartKey", json);
+    _prefs.setStringList("pdQuantityKey", pdQuantity);
+    notifyListeners();
     
   }
 }

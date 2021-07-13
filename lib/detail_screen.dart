@@ -127,7 +127,7 @@ class DetailProduct extends StatelessWidget {
                                     _savePdCart(product);
                                     Cart(product: product);
 
-                                    // _deletePdCart();
+                                    //_deletePdCart();
                                     // print(jsonProduct);
                                     // print(product.toMap());
                                   },
