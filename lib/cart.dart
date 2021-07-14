@@ -80,70 +80,73 @@ class ItemCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-    return Container(
-      decoration: BoxDecoration(border: Border.all(width: 2.0)),
-      margin: EdgeInsets.only(top: 20),
-      width: 350,
-      height: 150,
-      //color: Colors.blue,
-      child: Column(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Color(product.color),
-                        border: Border.all(width: 1.0),
-                        borderRadius: BorderRadius.circular(16)),
-                    child: FittedBox(
-                      child: Image.asset(product.image),
+    return InkWell(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DetailProduct(index: index, product: product,))),
+      child: Container(
+        decoration: BoxDecoration(border: Border.all(width: 2.0)),
+        margin: EdgeInsets.only(top: 20),
+        width: 350,
+        height: 150,
+        //color: Colors.blue,
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Color(product.color),
+                          border: Border.all(width: 1.0),
+                          borderRadius: BorderRadius.circular(16)),
+                      child: FittedBox(
+                        child: Image.asset(product.image),
+                      ),
                     ),
+                    flex: 2,
                   ),
-                  flex: 2,
-                ),
-                Expanded(
-                  child: Container(
-                    //color: Colors.brown,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(product.title),
-                        Text(product.color.toString()),
-                        Text('\$' + '${product.price}')
-                      ],
+                  Expanded(
+                    child: Container(
+                      //color: Colors.brown,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(product.title),
+                          Text(product.color.toString()),
+                          Text('\$' + '${product.price}')
+                        ],
+                      ),
                     ),
+                    flex: 3,
                   ),
-                  flex: 3,
-                ),
-                Expanded(
-                    child: Row(
-                      children: [
-                        IconButton(icon: Icon(Icons.delete), onPressed: () {
-                          productProvider.RemoveItem(product.id, index, product);
-                        },)
-                      ],
-                    ),
-                  flex: 1,
-                )
-              ],
+                  Expanded(
+                      child: Row(
+                        children: [
+                          IconButton(icon: Icon(Icons.delete), onPressed: () {
+                            productProvider.RemoveItem(product.id, index, product);
+                          },)
+                        ],
+                      ),
+                    flex: 1,
+                  )
+                ],
+              ),
+              flex: 4,
             ),
-            flex: 4,
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Counter(
-                  index: index,
-                  product: product,
-                ),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Counter(
+                    index: index,
+                    product: product,
+                  ),
+                ],
+              ),
+              flex: 1,
             ),
-            flex: 1,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

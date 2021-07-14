@@ -13,8 +13,9 @@ import 'static.dart';
 
 class DetailProduct extends StatelessWidget {
   final Product product;
+  final int index;
 
-  const DetailProduct({Key key, this.product}) : super(key: key);
+  const DetailProduct({Key key, this.product, this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +128,7 @@ class DetailProduct extends StatelessWidget {
                                     _savePdCart(product);
                                     Cart(product: product);
 
-                                    // _deletePdCart();
+                                    //_deletePdCart();
                                     // print(jsonProduct);
                                     // print(product.toMap());
                                   },
@@ -146,7 +147,10 @@ class DetailProduct extends StatelessWidget {
                                   width: 20,
                                 ),
                                 ElevatedButton.icon(
-                                    onPressed: null,
+                                    onPressed: () {
+                                      // showModalBottomSheet(context: context, builder: (context) =>
+                                      //     Counter(index: index, product: product,));
+                                    },
                                     icon: Icon(
                                       MyFlutterApp.dollar,
                                       size: 16,
